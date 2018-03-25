@@ -21,12 +21,25 @@ cv2.imshow('Original', img)
 cv2.waitKey(1000)
 
 # plot and save bw image
-binary = im_bw = cv2.threshold(img_greyscale, 254, 255, cv2.THRESH_BINARY)[1]
+binary = cv2.threshold(img_greyscale, 254, 255, cv2.THRESH_BINARY)[1]
 cv2.imshow('Black n\' White', binary)
 cv2.imwrite(resultsDirName + '/' + fileName[0] + '_' + 'bw' + fileName[1], binary)
 cv2.waitKey(1000)
 
+# plot and save edges image
 edges = ~cv2.Canny(np.uint8(binary), 100, 200)
 cv2.imshow('Edge Image', edges)
 cv2.imwrite(resultsDirName + '/' + fileName[0] + '_' + 'edges' + fileName[1], edges)
+cv2.waitKey(1000)
+
+#numbered image and stats
+image, contours, hierarchy = cv2.findContours(binary, 1, 2)
+i=0
+for cnt in contours:
+    M = cv2.moments(cnt)
+    print("região: %2d   perímetro: %7.2f   área: %6d" % (i, cv2.arcLength(cnt,True), cv2.contourArea(cnt)))
+    i = i+1
+
+cv2.imshow('Centroids', image)
+cv2.imwrite(resultsDirName + '/' + fileName[0] + '_' + 'centroids' + fileName[1], image)
 cv2.waitKey(1000)
