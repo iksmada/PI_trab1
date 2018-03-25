@@ -12,7 +12,8 @@ def rgb2gray(rgb):
 dirName = 'imagens_objetos_coloridos'
 images = listdir(dirName)
 imgName = images[np.trunc(np.random.rand() * len(images)).astype(int)]
-img = mpimg.imread(dirName + '/' + imgName, True)
+completeFilePath = dirName + '/' + imgName
+img = mpimg.imread(completeFilePath, True)
 
 # define plot images grid
 fig = plt.figure()
@@ -37,12 +38,20 @@ a.set_title('Original')
 a = fig.add_subplot(row, column, figCounter)
 figCounter = figCounter + 1
 gray=rgb2gray(img)
-binary = ~(gray<255)
+binary = 255 - (gray<255)*255
 #gray = (bolleanImg[:,:,0]|bolleanImg[:,:,1]|bolleanImg[:,:,2])
 plt.imshow(binary, cmap='binary_r')
 a.set_title('Black n\' White')
 extent = a.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
 fig.savefig(resultsDirName + '/' + fileName[0] + '_' + 'bw' + fileName[1], bbox_inches=extent)
+
+a = fig.add_subplot(row, column, figCounter)
+figCounter = figCounter + 1
+edges = cv2.Canny(np.uint8(binary),1,100)
+plt.imshow(edges,cmap ='binary_r')
+a.set_title('Edge Image')
+extent = a.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
+fig.savefig(resultsDirName + '/' + fileName[0] + '_' + 'edges' + fileName[1], bbox_inches=extent)
 
 
 # show grid of images
