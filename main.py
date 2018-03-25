@@ -13,7 +13,8 @@ dirName = 'imagens_objetos_coloridos'
 images = listdir(dirName)
 imgName = images[np.trunc(np.random.rand() * len(images)).astype(int)]
 completeFilePath = dirName + '/' + imgName
-img = mpimg.imread(completeFilePath, True)
+img = cv2.imread(completeFilePath)
+img_greyscale = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 # define plot images grid
 fig = plt.figure()
@@ -28,31 +29,19 @@ if not path.isdir(resultsDirName):
     makedirs(resultsDirName)
 
 # plot original image
-a = fig.add_subplot(row, column, figCounter)
-figCounter = figCounter + 1
-plt.imshow(img, vmin=0, vmax=255)
-a.set_title('Original')
+cv2.imshow('Original', img)
+cv2.waitKey(1000)
 
+# plot and save bw image
+binary = im_bw = cv2.threshold(img_greyscale, 254, 255, cv2.THRESH_BINARY)[1]
+cv2.imshow('Black n\' White', binary)
+cv2.imwrite(resultsDirName + '/' + fileName[0] + '_' + 'bw' + fileName[1], binary)
+cv2.waitKey(1000)
 
-# plot and save negative image
-a = fig.add_subplot(row, column, figCounter)
-figCounter = figCounter + 1
-gray=rgb2gray(img)
-binary = 255 - (gray<255)*255
-#gray = (bolleanImg[:,:,0]|bolleanImg[:,:,1]|bolleanImg[:,:,2])
-plt.imshow(binary, cmap='binary_r')
-a.set_title('Black n\' White')
-extent = a.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
-fig.savefig(resultsDirName + '/' + fileName[0] + '_' + 'bw' + fileName[1], bbox_inches=extent)
-
-a = fig.add_subplot(row, column, figCounter)
-figCounter = figCounter + 1
-edges = cv2.Canny(np.uint8(binary),1,100)
-plt.imshow(edges,cmap ='binary_r')
-a.set_title('Edge Image')
-extent = a.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
-fig.savefig(resultsDirName + '/' + fileName[0] + '_' + 'edges' + fileName[1], bbox_inches=extent)
-
+edges = ~cv2.Canny(np.uint8(binary), 100, 200)
+cv2.imshow('Edge Image', edges)
+cv2.imwrite(resultsDirName + '/' + fileName[0] + '_' + 'edges' + fileName[1], edges)
+cv2.waitKey(1000)
 
 # show grid of images
 plt.tight_layout()
