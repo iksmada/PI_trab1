@@ -81,6 +81,7 @@ if max(allAreas) > 3000:
     bins.append(max(allAreas))
 plt.hist(allAreas, bins=bins)  # arguments are passed to np.histogram
 plt.title("Histogram of size of objects")
+plt.savefig(resultsDirName + '/' + fileName[0] + '_' + 'histogram' + fileName[1])
 plt.show()
 
 
