@@ -42,14 +42,15 @@ bigObj = []
 i = 0
 font = cv2.FONT_HERSHEY_SIMPLEX
 fontScale = 0.5
-fontColor = (255, 255, 255)
-lineType = 1
+fontColor = (0, 0, 255)
+lineType = 2
+colorBack = cv2.cvtColor(binary, cv2.COLOR_GRAY2RGB)
 for cnt in contours:
     M = cv2.moments(cnt)
 
     cx = int(M['m10'] / M['m00'])
     cy = int(M['m01'] / M['m00'])
-    cv2.putText(binary, str(i),
+    cv2.putText(colorBack, str(i),
                 (cx - 8, cy + 5),
                 font,
                 fontScale,
@@ -68,16 +69,18 @@ for cnt in contours:
 
     i = i + 1
 
-cv2.imshow('Centroids', image)
-cv2.imwrite(resultsDirName + '/' + fileName[0] + '_' + 'centroids' + fileName[1], image)
+cv2.imshow('Centroids', colorBack)
+cv2.imwrite(resultsDirName + '/' + fileName[0] + '_' + 'centroids' + fileName[1], colorBack)
 print("numero de regiões pequenas %2d" % len(smallObj))
 print("numero de regiões médias   %2d" % len(midObj))
 print("numero de regiões grandes  %2d" % len(bigObj))
 
 allAreas = smallObj + midObj + bigObj
-
-plt.hist(allAreas, bins=[0,1500,3000,max(allAreas)])  # arguments are passed to np.histogram
-plt.title("Histogram with 'auto' bins")
+bins=[0,1500,3000]
+if max(allAreas) > 3000:
+    bins.append(max(allAreas))
+plt.hist(allAreas, bins=bins)  # arguments are passed to np.histogram
+plt.title("Histogram of size of objects")
 plt.show()
 
 
